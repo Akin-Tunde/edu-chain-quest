@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import Dashboard from "@/components/Dashboard";
 import Courses from "@/components/Courses";
 import Learning from "@/components/Learning";
@@ -29,9 +30,10 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <Header currentPage={currentPage} onNavigate={setCurrentPage} />
-      <main className="container mx-auto px-4 pb-8">
+      <main className="container mx-auto px-4 pb-24 lg:pb-8">
         {renderCurrentPage()}
       </main>
+      <Footer currentPage={currentPage} onNavigate={setCurrentPage} />
     </div>
   );
 };

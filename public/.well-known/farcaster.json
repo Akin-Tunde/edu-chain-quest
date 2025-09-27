@@ -1,0 +1,18 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjMwNDIxMywidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDdkOGFFQzAzMjExZjI0YjE5OEI5ZDc2NmUzN2M5RmY2OTExMWE4OEUifQ",
+    "payload": "eyJkb21haW4iOiJhcmItZWR1Lm5ldGxpZnkuYXBwIn0",
+    "signature": "MHg5ZmYzYjdlODFlNTFjYzFjOTQ2MDRlN2FlOWM3YTM4ZWYwYzEwNjYzYjEyMWJhNTE0ZGE5YjFkODFhN2QzYWJiNjkxZDA5ZTFkZTRhZjJkNjVmZTgzYmFkZDA3NWNiY2NiOTAzNTk5Y2VmZjg0YTc0OWVhY2JhODI1YzJiOTQ5MDFi"
+  },
+  "frame": {
+    "version": "1",
+    "name": "Example Frame",
+    "iconUrl": "https://arb-edu.netlify.app/icon.png",
+    "homeUrl": "https://arb-edu.netlify.app",
+    "imageUrl": "https://arb-edu.netlify.app/image.png",
+    "buttonTitle": "Check this out",
+    "splashImageUrl": "https://arb-edu.netlify.app/splash.png",
+    "splashBackgroundColor": "#eeccff",
+    "webhookUrl": "https://arb-edu.netlify.app/api/webhook"
+  }
+}

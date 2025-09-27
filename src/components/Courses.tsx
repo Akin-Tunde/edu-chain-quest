@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock, BookOpen, Users, Star, Play } from "lucide-react";
+import { Clock, BookOpen, Users, Star, Play, ChevronsDown } from "lucide-react";
 
 interface CoursesProps {
   onNavigate: (page: string) => void;
@@ -10,6 +10,13 @@ interface CoursesProps {
 
 const Courses = ({ onNavigate }: CoursesProps) => {
   const [activeFilter, setActiveFilter] = useState("all");
+  const INITIAL_VISIBLE_COURSES = 3;
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COURSES);
+
+  const handleFilterChange = (filterId: string) => {
+    setActiveFilter(filterId);
+    setVisibleCount(INITIAL_VISIBLE_COURSES);
+  };
 
   const filters = [
     { id: "all", label: "All Courses", count: 12 },
@@ -105,6 +112,8 @@ const Courses = ({ onNavigate }: CoursesProps) => {
     activeFilter === "all" || course.categories.includes(activeFilter)
   );
 
+  const coursesToShow = filteredCourses.slice(0, visibleCount);
+
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case "Beginner": return "bg-success/10 text-success";
@@ -131,7 +140,7 @@ const Courses = ({ onNavigate }: CoursesProps) => {
             <Button
               key={filter.id}
               variant={activeFilter === filter.id ? "default" : "outline"}
-              onClick={() => setActiveFilter(filter.id)}
+              onClick={() => handleFilterChange(filter.id)}
               className="hover:scale-105 transition-all duration-200"
             >
               {filter.label}
@@ -148,7 +157,7 @@ const Courses = ({ onNavigate }: CoursesProps) => {
 
       {/* Courses Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCourses.map((course) => (
+        {coursesToShow.map((course) => (
           <Card 
             key={course.id}
             className="glass hover:scale-[1.02] transition-all duration-300 cursor-pointer group overflow-hidden"
@@ -238,8 +247,23 @@ const Courses = ({ onNavigate }: CoursesProps) => {
         ))}
       </div>
 
+      {/* Show More Button */}
+      {filteredCourses.length > visibleCount && (
+        <div className="text-center mt-8">
+          <Button
+            size="lg"
+            variant="outline"
+            onClick={() => setVisibleCount(filteredCourses.length)}
+            className="hover:scale-105 transition-all"
+          >
+            Show More Courses
+            <ChevronsDown className="w-5 h-5 ml-2" />
+          </Button>
+        </div>
+      )}
+
       {/* Call to Action */}
-      <Card className="glass p-8 text-center">
+      <Card className="glass p-8 text-center mt-8">
         <div className="max-w-2xl mx-auto space-y-4">
           <h2 className="text-2xl font-bold gradient-text">Ready to Start Learning?</h2>
           <p className="text-muted-foreground">

@@ -124,7 +124,7 @@ const Profile = ({ onNavigate }: ProfileProps) => {
       <Card className="glass p-8">
         <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
           {/* Avatar */}
-          <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center text-white text-4xl font-bold hover:scale-105 transition-transform cursor-pointer">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center text-white text-4xl font-bold hover:scale-105 transition-transform cursor-pointer">
             {user.initials}
           </div>
           

@@ -155,47 +155,6 @@ const Leaderboard = () => {
         </div>
       </Card>
 
-      {/* Top 3 Podium */}
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
-        {leaderboardData.slice(0, 3).map((user, index) => (
-          <Card 
-            key={user.rank}
-            className={`glass p-6 text-center hover:scale-105 transition-all duration-300 ${
-              index === 0 ? 'md:order-2 card-elevated' : index === 1 ? 'md:order-1' : 'md:order-3'
-            }`}
-          >
-            <div className="space-y-4">
-              <div className="flex justify-center">
-                {getRankIcon(user.rank)}
-              </div>
-              
-              <div className={`w-20 h-20 rounded-full bg-gradient-to-br ${user.gradient} flex items-center justify-center text-white font-bold text-xl mx-auto hover:scale-110 transition-transform`}>
-                {user.initials}
-              </div>
-              
-              <div>
-                <h3 className="text-xl font-bold">{user.username}</h3>
-                <Badge variant="outline" className="mt-1">
-                  {user.title}
-                </Badge>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center justify-center space-x-2">
-                  <span className="text-2xl">💰</span>
-                  <span className="text-2xl font-bold gradient-text">
-                    {user.tokens.toLocaleString()}
-                  </span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {user.coursesCompleted} courses completed
-                </p>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
-
       {/* Full Leaderboard */}
       <Card className="glass overflow-hidden">
         <div className="p-6 border-b border-border">

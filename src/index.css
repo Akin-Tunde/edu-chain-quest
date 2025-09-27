@@ -19,10 +19,10 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 25%;
 
-    /* Brand Colors */
-    --primary: 248 53% 58%;
+    /* Brand Colors - Changed to Blue */
+    --primary: 220 85% 55%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 248 53% 68%;
+    --primary-glow: 220 85% 65%;
 
     --secondary: 220 15% 95%;
     --secondary-foreground: 220 15% 25%;
@@ -41,12 +41,12 @@ All colors MUST be HSL.
 
     --border: 220 15% 90%;
     --input: 220 15% 90%;
-    --ring: 248 53% 58%;
+    --ring: 220 85% 55%;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(248 53% 58%), hsl(262 52% 47%));
-    --gradient-background: linear-gradient(135deg, hsl(220 25% 97%), hsl(248 53% 95%));
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 100% / 0.8), hsl(248 53% 98% / 0.6));
+    /* Gradients - Changed to Blue */
+    --gradient-primary: linear-gradient(135deg, hsl(220 85% 55%), hsl(225 80% 48%));
+    --gradient-background: linear-gradient(135deg, hsl(220 25% 97%), hsl(220 85% 95%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100% / 0.8), hsl(220 85% 98% / 0.6));
     --gradient-reward: linear-gradient(135deg, hsl(45 93% 68%), hsl(32 95% 60%));
 
     /* Shadows & Effects */
@@ -85,9 +85,10 @@ All colors MUST be HSL.
     --popover: 220 15% 12%;
     --popover-foreground: 220 15% 95%;
 
-    --primary: 248 53% 58%;
+    /* Brand Colors (Dark) - Changed to Blue */
+    --primary: 220 85% 55%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 248 53% 68%;
+    --primary-glow: 220 85% 65%;
 
     --secondary: 220 15% 15%;
     --secondary-foreground: 220 15% 95%;
@@ -106,11 +107,12 @@ All colors MUST be HSL.
 
     --border: 220 15% 20%;
     --input: 220 15% 20%;
-    --ring: 248 53% 58%;
+    --ring: 220 85% 55%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(248 53% 58%), hsl(262 52% 47%));
-    --gradient-background: linear-gradient(135deg, hsl(220 15% 9%), hsl(248 53% 12%));
-    --gradient-card: linear-gradient(135deg, hsl(220 15% 15% / 0.8), hsl(248 53% 18% / 0.6));
+    /* Gradients (Dark) - Changed to Blue */
+    --gradient-primary: linear-gradient(135deg, hsl(220 85% 55%), hsl(225 80% 48%));
+    --gradient-background: linear-gradient(135deg, hsl(220 15% 9%), hsl(220 85% 12%));
+    --gradient-card: linear-gradient(135deg, hsl(220 15% 15% / 0.8), hsl(220 85% 18% / 0.6));
     --gradient-reward: linear-gradient(135deg, hsl(45 93% 68%), hsl(32 95% 60%));
 
     --shadow-glass: 0 8px 32px hsl(0 0% 0% / 0.3);
@@ -128,6 +130,12 @@ All colors MUST be HSL.
     @apply bg-background text-foreground font-sans;
     background: var(--gradient-background);
     min-height: 100vh;
+  }
+
+  @media (max-width: 767px) {
+    html {
+      font-size: 12px;
+    }
   }
 }
 

@@ -10,27 +10,27 @@ interface DashboardProps {
 const Dashboard = ({ onNavigate }: DashboardProps) => {
   const stats = [
     {
-      icon: <Coins className="w-8 h-8 text-accent" />,
+      icon: <Coins className="w-6 h-6 text-accent" />,
       value: "1,250",
-      label: "EDU Tokens Earned",
+      label: "EDU Tokens",
       change: "+200 this week"
     },
     {
-      icon: <BookOpen className="w-8 h-8 text-success" />,
+      icon: <BookOpen className="w-6 h-6 text-success" />,
       value: "8",
-      label: "Courses Completed",
+      label: "Courses Done",
       change: "2 in progress"
     },
     {
-      icon: <Clock className="w-8 h-8 text-primary" />,
+      icon: <Clock className="w-6 h-6 text-primary" />,
       value: "45",
       label: "Hours Learned",
       change: "+8 this week"
     },
     {
-      icon: <Trophy className="w-8 h-8 text-accent" />,
+      icon: <Trophy className="w-6 h-6 text-accent" />,
       value: "#12",
-      label: "Global Ranking",
+      label: "Global Rank",
       change: "↑ 3 positions"
     }
   ];
@@ -67,26 +67,26 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
       </Card>
 
       {/* Statistics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, index) => (
           <Card 
             key={index} 
-            className="glass p-6 hover:scale-105 transition-all duration-300 cursor-pointer group"
+            className="glass p-4 hover:scale-105 transition-all duration-300 cursor-pointer group"
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-xl bg-secondary group-hover:scale-110 transition-transform">
+            <div className="flex items-center justify-between mb-2">
+              <div className="p-2 rounded-lg bg-secondary group-hover:scale-110 transition-transform">
                 {stat.icon}
               </div>
               <div className="text-right">
-                <div className="text-3xl font-bold gradient-text">
+                <div className="text-2xl font-bold gradient-text">
                   {stat.value}
                 </div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-xs text-muted-foreground">
                   {stat.change}
                 </div>
               </div>
             </div>
-            <h3 className="font-semibold text-foreground">
+            <h3 className="font-semibold text-foreground text-sm">
               {stat.label}
             </h3>
           </Card>
@@ -157,42 +157,6 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
           ))}
         </div>
       </Card>
-
-      {/* Quick Actions */}
-      <div className="grid md:grid-cols-3 gap-4">
-        <Card 
-          className="glass p-6 hover:scale-105 transition-all cursor-pointer group"
-          onClick={() => onNavigate('courses')}
-        >
-          <div className="text-center">
-            <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">🎯</div>
-            <h3 className="font-semibold mb-2">Explore New Courses</h3>
-            <p className="text-sm text-muted-foreground">Discover blockchain topics</p>
-          </div>
-        </Card>
-
-        <Card 
-          className="glass p-6 hover:scale-105 transition-all cursor-pointer group"
-          onClick={() => onNavigate('leaderboard')}
-        >
-          <div className="text-center">
-            <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">🏆</div>
-            <h3 className="font-semibold mb-2">Check Leaderboard</h3>
-            <p className="text-sm text-muted-foreground">See your ranking</p>
-          </div>
-        </Card>
-
-        <Card 
-          className="glass p-6 hover:scale-105 transition-all cursor-pointer group"
-          onClick={() => onNavigate('profile')}
-        >
-          <div className="text-center">
-            <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">⭐</div>
-            <h3 className="font-semibold mb-2">View Achievements</h3>
-            <p className="text-sm text-muted-foreground">Track your progress</p>
-          </div>
-        </Card>
-      </div>
     </div>
   );
 };
