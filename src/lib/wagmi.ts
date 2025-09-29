@@ -1,5 +1,5 @@
 import { http, createConfig } from "wagmi";
-import { mainnet, sepolia, base , baseSepolia } from "wagmi/chains";
+import { mainnet, sepolia, base , baseSepolia, celo } from "wagmi/chains";
 import { injected, walletConnect } from "wagmi/connectors";
 import { farcasterMiniApp as miniAppConnector } from '@farcaster/miniapp-wagmi-connector';
 
@@ -18,7 +18,7 @@ if (!projectId) {
 }
 
 export const config = createConfig({
-  chains: [mainnet, sepolia, base, baseSepolia ],
+  chains: [mainnet, sepolia, base, baseSepolia, celo ],
   connectors: [
     miniAppConnector(),
     injected({ shimDisconnect: true }),
@@ -37,6 +37,7 @@ export const config = createConfig({
     [sepolia.id]: http(),
     [base.id]: http(),
     [baseSepolia .id]: http(),
+    [celo .id]: http(),
   },
   multiInjectedProviderDiscovery: true,
   ssr: false,

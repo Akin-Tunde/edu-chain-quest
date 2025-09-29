@@ -1,3 +1,5 @@
+// src/pages/Index.tsx
+
 import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -6,6 +8,8 @@ import Courses from "@/components/Courses";
 import Learning from "@/components/Learning";
 import Leaderboard from "@/components/Leaderboard";
 import Profile from "@/components/Profile";
+// --- CHANGE 1: Import the new Admin component ---
+import { Admin } from "@/components/Admin";
 
 const Index = () => {
   const [currentPage, setCurrentPage] = useState("dashboard");
@@ -22,6 +26,9 @@ const Index = () => {
         return <Leaderboard />;
       case "profile":
         return <Profile onNavigate={setCurrentPage} />;
+      // --- CHANGE 2: Add the case for the admin page ---
+      case "admin":
+        return <Admin />;
       default:
         return <Dashboard onNavigate={setCurrentPage} />;
     }

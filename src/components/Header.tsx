@@ -1,7 +1,21 @@
+// src/components/Header.tsx
 
 import { useState } from "react";
+import { GraduationCap, Menu, Wallet, X } from "lucide-react";
+import { formatUnits } from "viem";
+import { useAccount, useConnect, useDisconnect, useReadContract } from "wagmi";
+
 import { Button } from "@/components/ui/button";
-import { GraduationCap, Wallet, Menu, X } from "lucide-react";
+import { EDUTokenAddress, EDUTokenABI } from "@/lib/contracts";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { WalletIcon } from "./WalletIcon";
 
 interface HeaderProps {
   currentPage: string;
@@ -10,15 +24,27 @@ interface HeaderProps {
 
 const Header = ({ currentPage, onNavigate }: HeaderProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isWalletConnected, setIsWalletConnected] = useState(true);
-  
-  // Example wallet address
-  const userAddress = "0x1a2B3c4D5e6F7g8H9i0J1k2L3m4N5o6P7q8R";
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Formatter for the address
-  const formattedAddress = isWalletConnected 
-    ? `${userAddress.substring(0, 6)}...${userAddress.substring(userAddress.length - 4)}`
+  const { address, isConnected } = useAccount();
+  const { connect, connectors, status, error } = useConnect();
+  const { disconnect } = useDisconnect();
+
+  const { data: balance, isLoading: isBalanceLoading } = useReadContract({
+    address: EDUTokenAddress,
+    abi: EDUTokenABI,
+    functionName: 'balanceOf',
+    args: [address!],
+    query: { enabled: isConnected && !!address },
+  });
+
+  const formattedAddress = isConnected && address
+    ? `${address.substring(0, 6)}...${address.substring(address.length - 4)}`
     : null;
+    
+  const formattedBalance = balance
+    ? parseFloat(formatUnits(balance, 18)).toLocaleString('en-US', { maximumFractionDigits: 0 })
+    : "0";
 
   const navItems = [
     { id: "dashboard", label: "Dashboard", icon: "📊" },
@@ -26,15 +52,36 @@ const Header = ({ currentPage, onNavigate }: HeaderProps) => {
     { id: "learning", label: "Learning", icon: "🎓" },
     { id: "leaderboard", label: "Leaderboard", icon: "🏆" },
     { id: "profile", label: "Profile", icon: "👤" },
+    
+    { id: "admin", label: "Admin", icon: "⚙️" },
   ];
 
-  const handleWalletClick = () => {
-    if (isWalletConnected) {
-      setIsWalletConnected(false);
-    } else {
-      setIsWalletConnected(true);
-    }
-  };
+  const connectDialogContent = (
+    <>
+      <DialogHeader>
+        <DialogTitle>Connect a Wallet</DialogTitle>
+        <DialogDescription>Choose your preferred wallet to continue.</DialogDescription>
+      </DialogHeader>
+      <div className="flex flex-col space-y-3 pt-4">
+        {connectors.map((connector) => (
+          <Button
+            key={connector.uid}
+            onClick={() => {
+              connect({ connector });
+              setIsModalOpen(false);
+            }}
+            variant="outline"
+            className="w-full flex justify-start items-center text-base h-14"
+          >
+            <WalletIcon connectorId={connector.id} className="w-6 h-6 mr-4" />
+            {connector.name}
+          </Button>
+        ))}
+      </div>
+      {status === 'pending' && <p className="text-center text-sm text-muted-foreground mt-2">Connecting...</p>}
+      {error && <p className="text-center text-sm text-destructive mt-2">{error.message}</p>}
+    </>
+  );
 
   return (
     <>
@@ -69,51 +116,54 @@ const Header = ({ currentPage, onNavigate }: HeaderProps) => {
 
             {/* Desktop Wallet Section */}
             <div className="hidden lg:flex items-center space-x-4">
-              <div className="glass rounded-lg px-4 py-2">
-                <div className="flex items-center space-x-3 divide-x divide-border">
-                  <div className="flex items-center space-x-2 pr-3">
-                    <span className="text-2xl">💰</span>
-                    <span className="font-bold text-lg gradient-text">1,250 EDU</span>
-                  </div>
-                  {isWalletConnected && (
-                    <div className="pl-3">
-                      <span className="text-sm font-mono text-muted-foreground">{formattedAddress}</span>
+              {isConnected ? (
+                <>
+                  <div className="glass rounded-lg px-4 py-2">
+                    <div className="flex items-center space-x-3 divide-x divide-border">
+                      <div className="flex items-center space-x-2 pr-3">
+                        <span className="text-2xl">💰</span>
+                        <span className="font-bold text-lg gradient-text">
+                          {isBalanceLoading ? "..." : formattedBalance} EDU
+                        </span>
+                      </div>
+                      <div className="pl-3">
+                        <span className="text-sm font-mono text-muted-foreground">{formattedAddress}</span>
+                      </div>
                     </div>
-                  )}
-                </div>
-              </div>
-              <Button
-                onClick={handleWalletClick}
-                variant={isWalletConnected ? "secondary" : "default"}
-                className="flex items-center space-x-2"
-              >
-                <Wallet className="w-4 h-4" />
-                <span>
-                  {isWalletConnected ? "Disconnect" : "Connect Wallet"}
-                </span>
-              </Button>
+                  </div>
+                  <Button onClick={() => disconnect()} variant="secondary">Disconnect</Button>
+                </>
+              ) : (
+                <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                  <DialogTrigger asChild>
+                    <Button><Wallet className="w-4 h-4 mr-2" />Connect Wallet</Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    {connectDialogContent}
+                  </DialogContent>
+                </Dialog>
+              )}
             </div>
             
-            {/* Mobile Wallet & Menu Button */}
+            {/* --- CORRECTED: Mobile Wallet & Menu Button --- */}
             <div className="lg:hidden flex items-center space-x-2">
-              <div className="glass rounded-lg px-3 py-2">
-                <div className="flex items-center space-x-2">
-                  <span className="text-xl">💰</span>
-                  <span className="font-bold gradient-text">1,250</span>
-                   {isWalletConnected && (
-                    <span className="text-xs font-mono text-muted-foreground">{`${userAddress.substring(0, 4)}...${userAddress.substring(userAddress.length - 4)}`}</span>
-                  )}
+               {isConnected && address && (
+                <div className="glass rounded-lg px-3 py-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xl">💰</span>
+                    <span className="font-bold gradient-text">
+                      {isBalanceLoading ? "..." : formattedBalance}
+                    </span>
+                    {/* THIS IS THE CORRECTED LINE */}
+                    <span className="text-xs font-mono text-muted-foreground">{`${address.substring(0, 4)}...${address.substring(address.length - 4)}`}</span>
+                  </div>
                 </div>
-              </div>
+              )}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="p-2 rounded-lg hover:bg-secondary transition-colors"
               >
-                {isMobileMenuOpen ? (
-                  <X className="w-6 h-6" />
-                ) : (
-                  <Menu className="w-6 h-6" />
-                )}
+                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
           </div>
@@ -123,29 +173,34 @@ const Header = ({ currentPage, onNavigate }: HeaderProps) => {
             <div className="lg:hidden mt-4 pt-4 border-t border-border animate-slide-up">
               <div className="flex flex-col space-y-2">
                 {navItems.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => {
-                      onNavigate(item.id);
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-left ${
-                      currentPage === item.id
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-                    }`}
-                  >
+                  <button key={item.id} onClick={() => { onNavigate(item.id); setIsMobileMenuOpen(false); }} className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-left ${currentPage === item.id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-secondary"}`}>
                     <span className="text-xl">{item.icon}</span>
                     <span className="font-medium">{item.label}</span>
                   </button>
                 ))}
+                
+                <div className="pt-2">
+                  {isConnected ? (
+                     <Button onClick={() => disconnect()} variant="secondary" className="w-full">
+                       Disconnect ({formattedAddress})
+                     </Button>
+                  ) : (
+                     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                       <DialogTrigger asChild>
+                         <Button className="w-full"><Wallet className="w-4 h-4 mr-2" />Connect Wallet</Button>
+                       </DialogTrigger>
+                       <DialogContent>
+                         {connectDialogContent}
+                       </DialogContent>
+                     </Dialog>
+                  )}
+                </div>
               </div>
             </div>
           )}
         </div>
       </header>
       
-      {/* Mobile Menu Backdrop */}
       {isMobileMenuOpen && (
         <div 
           className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"

@@ -4,6 +4,13 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, Award, TrendingUp, BookOpen, Target, Zap, Trophy, ChevronsDown, ChevronsUp } from "lucide-react";
+import { StakingCard } from "./StakingCard";
+import { RewardCard } from "./RewardCard";
+
+import { useAccount, useReadContract } from "wagmi";
+import { formatUnits } from "viem";
+import { EDUStakingAddress, EDUStakingABI } from "@/lib/contracts";
+
 
 interface ProfileProps {
   onNavigate: (page: string) => void;
@@ -12,6 +19,20 @@ interface ProfileProps {
 const Profile = ({ onNavigate }: ProfileProps) => {
   const [showAllAchievements, setShowAllAchievements] = useState(false);
   const INITIAL_VISIBLE_ACHIEVEMENTS = 4;
+    const { address } = useAccount();
+
+  const { data: stakedBalance, isLoading: isStakedBalanceLoading } = useReadContract({
+      address: EDUStakingAddress,
+      abi: EDUStakingABI,
+      functionName: 'getTotalStakedForUser',
+      args: [address!],
+      query: { enabled: !!address },
+  });
+
+  // Format the BigInt value into a readable string
+  const formattedStakedBalance = stakedBalance
+    ? parseFloat(formatUnits(stakedBalance, 18)).toLocaleString('en-US', { maximumFractionDigits: 2 })
+    : "0";
 
   const user = {
     name: "Alex Thompson",
@@ -167,11 +188,13 @@ const Profile = ({ onNavigate }: ProfileProps) => {
       </Card>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="glass p-6 text-center hover:scale-105 transition-all">
-          <div className="text-3xl mb-2">⏱️</div>
-          <div className="text-2xl font-bold gradient-text">{user.hoursLearned}</div>
-          <div className="text-sm text-muted-foreground">Hours Learned</div>
+          <div className="text-3xl mb-2">💰</div>
+          <div className="text-2xl font-bold gradient-text">
+            {isStakedBalanceLoading ? "..." : formattedStakedBalance}
+          </div>
+          <div className="text-sm text-muted-foreground">Total Staked</div>
         </Card>
         
         <Card className="glass p-6 text-center hover:scale-105 transition-all">
@@ -193,6 +216,10 @@ const Profile = ({ onNavigate }: ProfileProps) => {
         </Card>
       </div>
 
+       <div className="grid lg:grid-cols-2 gap-8">
+        <RewardCard />
+        <StakingCard />
+      </div>
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Achievements */}
         <div className="lg:col-span-2">

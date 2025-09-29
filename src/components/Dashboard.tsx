@@ -1,19 +1,45 @@
-import { Progress } from "@/components/ui/progress";
-import { Card } from "@/components/ui/card";
+import { ArrowRight, BookOpen, Clock, Coins, Trophy } from "lucide-react";
+import { formatUnits } from "viem";
+import { useAccount, useReadContract } from "wagmi";
+
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Trophy, Clock, BookOpen, Coins } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+// Import your contract address and ABI
+import { EDUTokenAddress, EDUTokenABI } from "@/lib/contracts";
 
 interface DashboardProps {
   onNavigate: (page: string) => void;
 }
 
 const Dashboard = ({ onNavigate }: DashboardProps) => {
+  // Get the connected wallet's address
+  const { address: userAddress, isConnected } = useAccount();
+
+  // Read the user's EDU token balance from the contract
+  const { data: balance, isLoading: isBalanceLoading } = useReadContract({
+    address: EDUTokenAddress,
+    abi: EDUTokenABI,
+    functionName: 'balanceOf',
+    args: [userAddress!],
+    query: {
+      // Only run this query if the user is connected
+      enabled: isConnected && !!userAddress,
+    },
+  });
+
+  // Format the balance from BigInt (wei) to a readable string
+  const formattedBalance = balance
+    ? parseFloat(formatUnits(balance, 18)).toLocaleString('en-US', { maximumFractionDigits: 2 })
+    : "0";
+
   const stats = [
     {
       icon: <Coins className="w-6 h-6 text-accent" />,
-      value: "1,250",
+      // Use the live balance data, showing a loading state
+      value: isConnected ? (isBalanceLoading ? "..." : formattedBalance) : "0",
       label: "EDU Tokens",
-      change: "+200 this week"
+      change: "+200 this week" // This remains static for now
     },
     {
       icon: <BookOpen className="w-6 h-6 text-success" />,
@@ -58,7 +84,7 @@ const Dashboard = ({ onNavigate }: DashboardProps) => {
       <Card className="glass card-elevated p-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold gradient-text mb-4">
-            Welcome back, Alex! 👋
+            Welcome back! 👋
           </h1>
           <p className="text-xl text-muted-foreground">
             Ready to continue your crypto learning journey? You're doing amazing!
