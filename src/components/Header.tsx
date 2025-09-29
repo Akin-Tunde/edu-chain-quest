@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { GraduationCap, Wallet, Menu, X } from "lucide-react";
@@ -11,6 +12,14 @@ const Header = ({ currentPage, onNavigate }: HeaderProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isWalletConnected, setIsWalletConnected] = useState(true);
   
+  // Example wallet address
+  const userAddress = "0x1a2B3c4D5e6F7g8H9i0J1k2L3m4N5o6P7q8R";
+
+  // Formatter for the address
+  const formattedAddress = isWalletConnected 
+    ? `${userAddress.substring(0, 6)}...${userAddress.substring(userAddress.length - 4)}`
+    : null;
+
   const navItems = [
     { id: "dashboard", label: "Dashboard", icon: "📊" },
     { id: "courses", label: "Courses", icon: "📚" },
@@ -61,9 +70,16 @@ const Header = ({ currentPage, onNavigate }: HeaderProps) => {
             {/* Desktop Wallet Section */}
             <div className="hidden lg:flex items-center space-x-4">
               <div className="glass rounded-lg px-4 py-2">
-                <div className="flex items-center space-x-2">
-                  <span className="text-2xl">💰</span>
-                  <span className="font-bold text-lg gradient-text">1,250 EDU</span>
+                <div className="flex items-center space-x-3 divide-x divide-border">
+                  <div className="flex items-center space-x-2 pr-3">
+                    <span className="text-2xl">💰</span>
+                    <span className="font-bold text-lg gradient-text">1,250 EDU</span>
+                  </div>
+                  {isWalletConnected && (
+                    <div className="pl-3">
+                      <span className="text-sm font-mono text-muted-foreground">{formattedAddress}</span>
+                    </div>
+                  )}
                 </div>
               </div>
               <Button
@@ -73,17 +89,20 @@ const Header = ({ currentPage, onNavigate }: HeaderProps) => {
               >
                 <Wallet className="w-4 h-4" />
                 <span>
-                  {isWalletConnected ? "0x1234...5678" : "Connect Wallet"}
+                  {isWalletConnected ? "Disconnect" : "Connect Wallet"}
                 </span>
               </Button>
             </div>
             
             {/* Mobile Wallet & Menu Button */}
-            <div className="lg:hidden flex items-center space-x-4">
+            <div className="lg:hidden flex items-center space-x-2">
               <div className="glass rounded-lg px-3 py-2">
                 <div className="flex items-center space-x-2">
                   <span className="text-xl">💰</span>
                   <span className="font-bold gradient-text">1,250</span>
+                   {isWalletConnected && (
+                    <span className="text-xs font-mono text-muted-foreground">{`${userAddress.substring(0, 4)}...${userAddress.substring(userAddress.length - 4)}`}</span>
+                  )}
                 </div>
               </div>
               <button
