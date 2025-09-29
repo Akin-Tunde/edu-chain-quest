@@ -1,10 +1,10 @@
 // src/lib/contracts.ts
 //proxy address
-export const EDUTokenAddress = "0xd3240460DECdd7cC6Cd465d58cAFDE66fbcC8551";
-export const CourseRegistryAddress = "0x66af7F20AA0Ed1697Aade356f568E28243bF684a";
-export const AchievementBadgeAddress = "0xCAa3cEB38076E600EA0A07f2D2Acab9348E56D43";
-export const RewardDistributionAddress = "0x1cbcA43488E4c467FfE64D412DC6df6b946aB71b";
-export const EDUStakingAddress = "0xa91C2e49AD3143ea7827f7bf76a64142166140f8";
+export const EDUTokenAddress = "0x2d08a560dB7C43EEecA3835C890B9a0CAD694D9C";
+export const CourseRegistryAddress = "0xCE6507574c1e4b320de6fF773FD9c7160933A212";
+export const AchievementBadgeAddress = "0x53054FE34FF58B22c734729600f943235F666295";
+export const RewardDistributionAddress = "0x51E16F35a70d980a8933D159aBB85445eB3b0596";
+export const EDUStakingAddress = "0xB2aF0489Db7b61a61D6b20e5a7ADC244b365550c";
 
 export const EDUTokenABI = [
 	{

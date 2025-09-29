@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAccount, useChainId, useReadContract, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
-import { celo } from "wagmi/chains";
+import { base } from "wagmi/chains";
 import { parseEther, BaseError } from "viem";
 import { toast } from "sonner";
 import { Loader2, AlertTriangle } from "lucide-react";
