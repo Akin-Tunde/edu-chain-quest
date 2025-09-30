@@ -26,7 +26,7 @@ export const StakingCard = () => {
     
     const currentChainId = useChainId();
     const { switchChain } = useSwitchChain();
-    const isWrongNetwork = isConnected && currentChainId !== celo.id;
+    const isWrongNetwork = isConnected && currentChainId !== base.id;
 
     // --- CHANGE 1: We now need separate hooks for approve and stake actions ---
     const { data: approveHash, writeContract: approve, isPending: isApproving, error: approveError } = useWriteContract();
@@ -118,7 +118,7 @@ export const StakingCard = () => {
                 <div className="flex flex-col items-center p-4 space-y-4 bg-destructive/10 rounded-lg">
                     <AlertTriangle className="w-10 h-10 text-destructive" />
                     <p className="font-semibold text-center">Wrong Network Detected</p>
-                    <Button onClick={() => switchChain({ chainId: celo.id })}>Switch to Celo Mainnet</Button>
+                    <Button onClick={() => switchChain({ chainId: base.id })}>Switch to base Mainnet</Button>
                 </div>
             )}
 

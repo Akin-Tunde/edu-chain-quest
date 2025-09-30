@@ -1,4 +1,3 @@
-
 import {
   Home,
   BookOpen,
@@ -7,12 +6,11 @@ import {
   User,
 } from "lucide-react";
 
-interface FooterProps {
-  currentPage: string;
-  onNavigate: (page: string) => void;
-}
+import { useAppContext } from "@/contexts/AppContext";
 
-const Footer = ({ currentPage, onNavigate }: FooterProps) => {
+const Footer = () => {
+  const { currentPage, navigate } = useAppContext();
+
   const navItems = [
     { id: "dashboard", label: "Dashboard", icon: <Home className="w-6 h-6" /> },
     { id: "courses", label: "Courses", icon: <BookOpen className="w-6 h-6" /> },
@@ -27,7 +25,7 @@ const Footer = ({ currentPage, onNavigate }: FooterProps) => {
         {navItems.map((item) => (
           <button
             key={item.id}
-            onClick={() => onNavigate(item.id)}
+            onClick={() => navigate(item.id)}
             className={`flex h-full w-full flex-col items-center justify-center gap-1 rounded-lg text-xs font-medium transition-colors ${
               currentPage === item.id
                 ? "text-primary"

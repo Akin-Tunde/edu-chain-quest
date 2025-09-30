@@ -1,89 +1,83 @@
+// src/components/Learning.tsx
+
 import { useState } from "react";
+import { useReadContract } from "wagmi";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight, Check, Play, Lock, BookOpen } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { CourseRegistryAddress, CourseRegistryABI } from "@/lib/contracts";
 
 interface LearningProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (page: string, courseId?: number) => void; // Updated signature
+  courseId: number;
 }
 
-const Learning = ({ onNavigate }: LearningProps) => {
-  const [currentLesson, setCurrentLesson] = useState(3);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  const [showResult, setShowResult] = useState(false);
-
-  const course = {
-    title: "DeFi Fundamentals",
-    totalLessons: 6,
-    progress: 50
-  };
-
-  const lessons = [
-    { id: 1, title: "What is DeFi?", completed: true, locked: false },
-    { id: 2, title: "Decentralized Exchanges", completed: true, locked: false },
-    { id: 3, title: "Liquidity Pools", completed: false, locked: false, current: true },
-    { id: 4, title: "Yield Farming", completed: false, locked: false },
-    { id: 5, title: "DeFi Risks", completed: false, locked: true },
-    { id: 6, title: "Advanced Strategies", completed: false, locked: true }
-  ];
-
-  const currentLessonData = {
-    title: "Understanding Liquidity Pools",
-    content: `
-      Liquidity pools are one of the core technologies behind many decentralized exchanges and DeFi protocols. 
-      They are essentially smart contracts that hold tokens and provide liquidity for trading.
-
-      ## How Liquidity Pools Work
-
-      Instead of relying on traditional order books, decentralized exchanges use liquidity pools to facilitate trades. 
-      Users called "liquidity providers" deposit pairs of tokens into these pools, earning fees from trades in return.
-
-      ## Key Benefits
-
-      - **24/7 Trading**: No need to wait for matching buyers and sellers
-      - **Passive Income**: Earn fees from providing liquidity  
-      - **Decentralized**: No central authority controls the pool
-      - **Programmable**: Smart contracts automate all operations
-
-      ## Popular Pool Types
-
-      Most liquidity pools follow the 50/50 ratio model, but newer protocols offer various ratios and single-asset pools.
-    `,
-    quiz: {
-      question: "What is the main purpose of liquidity pools in DeFi?",
-      options: [
-        "To store cryptocurrencies safely",
-        "To provide liquidity for decentralized trading",
-        "To mine new tokens",
-        "To stake tokens for governance"
-      ],
-      correctAnswer: 1,
-      explanation: "Liquidity pools provide the tokens needed for decentralized exchanges to function without traditional order books."
+// In a real dApp, this detailed metadata would come from an IPFS hash.
+// The key (1, 2) corresponds to the courseId on the blockchain.
+const courseLessonsMetadata: { [key: number]: any } = {
+  1: {
+    title: "On-Chain DeFi Fundamentals",
+    progress: 65,
+    lessons: [
+      { id: 1, title: "What is DeFi?", completed: true, locked: false },
+      { id: 2, title: "Decentralized Exchanges", completed: true, locked: false },
+      { id: 3, title: "Liquidity Pools", completed: false, locked: false, current: true },
+      { id: 4, title: "Yield Farming", completed: false, locked: false },
+      { id: 5, title: "DeFi Risks", completed: false, locked: true },
+      { id: 6, title: "Advanced Strategies", completed: false, locked: true }
+    ],
+    // For demonstration, the content is static but could be part of the metadata object
+    currentLessonContent: {
+      title: "Understanding Liquidity Pools",
+      videoUrl: "#",
+      contentText: "Liquidity pools are one of the core technologies behind many decentralized exchanges..."
     }
-  };
-
-  const handleAnswerSelect = (answerIndex: number) => {
-    setSelectedAnswer(answerIndex);
-    setShowResult(true);
-  };
-
-  const handleNextLesson = () => {
-    if (currentLesson < course.totalLessons) {
-      setCurrentLesson(currentLesson + 1);
-      setSelectedAnswer(null);
-      setShowResult(false);
+  },
+  2: {
+    title: "On-Chain Smart Contract Security",
+    progress: 30,
+    lessons: [
+      { id: 1, title: "Intro to Security", completed: true, locked: false },
+      { id: 2, title: "Common Vulnerabilities", completed: false, locked: false, current: true },
+      { id: 3, title: "Auditing Techniques", completed: false, locked: true },
+      { id: 4, title: "Formal Verification", completed: false, locked: true },
+    ],
+    currentLessonContent: {
+      title: "Common Vulnerabilities",
+      videoUrl: "#",
+      contentText: "Understanding common smart contract vulnerabilities like reentrancy and integer overflows is crucial..."
     }
-  };
+  },
+};
 
-  const handlePreviousLesson = () => {
-    if (currentLesson > 1) {
-      setCurrentLesson(currentLesson - 1);
-      setSelectedAnswer(null);
-      setShowResult(false);
-    }
-  };
+const Learning = ({ onNavigate, courseId }: LearningProps) => {
+  // We use a fallback to course 1 if the provided courseId is invalid
+  const course = courseLessonsMetadata[courseId] || courseLessonsMetadata[1];
+  const lessons = course.lessons;
+  const currentLessonIndex = lessons.findIndex((l: any) => l.current);
+
+  // Fetch the on-chain data for the specific course ID
+  const { isLoading: isOnChainDataLoading } = useReadContract({
+    address: CourseRegistryAddress,
+    abi: CourseRegistryABI,
+    functionName: 'courses',
+    args: [BigInt(courseId)],
+  });
+  
+  if (isOnChainDataLoading) {
+    return (
+      <div className="grid lg:grid-cols-4 gap-6">
+        <div className="lg:col-span-1"><Skeleton className="h-[500px] w-full" /></div>
+        <div className="lg:col-span-3 space-y-6">
+          <Skeleton className="h-80 w-full" />
+          <Skeleton className="h-64 w-full" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="grid lg:grid-cols-4 gap-6 animate-fade-in">
@@ -91,23 +85,15 @@ const Learning = ({ onNavigate }: LearningProps) => {
       <div className="lg:col-span-1">
         <Card className="glass p-6 sticky top-8">
           <div className="space-y-6">
-            {/* Course Header */}
             <div>
-              <Button
-                variant="ghost"
-                onClick={() => onNavigate('courses')}
-                className="mb-4 p-0 h-auto hover:bg-transparent"
-              >
-                <ChevronLeft className="w-4 h-4 mr-1" />
-                Back to Courses
+              <Button variant="ghost" onClick={() => onNavigate('courses')} className="mb-4 p-0 h-auto hover:bg-transparent">
+                <ChevronLeft className="w-4 h-4 mr-1" /> Back to Courses
               </Button>
               <h2 className="text-xl font-bold gradient-text">{course.title}</h2>
               <p className="text-sm text-muted-foreground mt-1">
-                Lesson {currentLesson} of {course.totalLessons}
+                Lesson {currentLessonIndex + 1} of {lessons.length}
               </p>
             </div>
-
-            {/* Progress */}
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>Course Progress</span>
@@ -115,47 +101,14 @@ const Learning = ({ onNavigate }: LearningProps) => {
               </div>
               <Progress value={course.progress} className="h-2" />
             </div>
-
-            {/* Lesson Navigation */}
             <div className="space-y-2">
-              <h3 className="font-semibold text-sm flex items-center">
-                <BookOpen className="w-4 h-4 mr-2" />
-                Lessons
-              </h3>
-              {lessons.map((lesson) => (
-                <div
-                  key={lesson.id}
-                  className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-all duration-200 ${
-                    lesson.current
-                      ? "bg-primary text-primary-foreground"
-                      : lesson.completed
-                      ? "bg-success/10 hover:bg-success/20"
-                      : lesson.locked
-                      ? "bg-muted/50 cursor-not-allowed opacity-50"
-                      : "hover:bg-secondary"
-                  }`}
-                  onClick={() => !lesson.locked && setCurrentLesson(lesson.id)}
-                >
+              <h3 className="font-semibold text-sm flex items-center"><BookOpen className="w-4 h-4 mr-2" /> Lessons</h3>
+              {lessons.map((lesson: any) => (
+                <div key={lesson.id} className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-colors ${lesson.current ? "bg-primary text-primary-foreground" : lesson.completed ? "bg-success/10" : "hover:bg-secondary"}`}>
                   <div className="flex-shrink-0">
-                    {lesson.completed ? (
-                      <div className="w-6 h-6 rounded-full bg-success flex items-center justify-center">
-                        <Check className="w-4 h-4 text-white" />
-                      </div>
-                    ) : lesson.current ? (
-                      <div className="w-6 h-6 rounded-full bg-primary-foreground flex items-center justify-center">
-                        <Play className="w-3 h-3 text-primary" />
-                      </div>
-                    ) : lesson.locked ? (
-                      <Lock className="w-5 h-5 text-muted-foreground" />
-                    ) : (
-                      <div className="w-6 h-6 rounded-full border-2 border-muted-foreground" />
-                    )}
+                    {lesson.completed ? <div className="w-6 h-6 rounded-full bg-success flex items-center justify-center"><Check className="w-4 h-4 text-white" /></div> : lesson.current ? <div className="w-6 h-6 rounded-full bg-primary-foreground flex items-center justify-center"><Play className="w-3 h-3 text-primary" /></div> : lesson.locked ? <Lock className="w-5 h-5 text-muted-foreground" /> : <div className="w-6 h-6 rounded-full border-2 border-muted-foreground" />}
                   </div>
-                  <span className={`text-sm font-medium ${
-                    lesson.locked ? "text-muted-foreground" : ""
-                  }`}>
-                    {lesson.title}
-                  </span>
+                  <span className="text-sm font-medium">{lesson.title}</span>
                 </div>
               ))}
             </div>
@@ -165,146 +118,34 @@ const Learning = ({ onNavigate }: LearningProps) => {
 
       {/* Main Content Area */}
       <div className="lg:col-span-3 space-y-6">
-        {/* Lesson Content */}
         <Card className="glass p-8">
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold gradient-text">
-                {currentLessonData.title}
-              </h1>
-              <Badge variant="outline" className="text-sm">
-                Lesson {currentLesson}
-              </Badge>
+            <h1 className="text-3xl font-bold gradient-text">
+              {course.currentLessonContent.title}
+            </h1>
+            <div className="relative rounded-xl overflow-hidden bg-primary/10 h-80 flex items-center justify-center">
+              <Play className="w-16 h-16 text-primary/50" />
+              <p className="absolute bottom-4 text-sm text-muted-foreground">Video player placeholder</p>
             </div>
-
-            {/* Video Placeholder */}
-            <div className="relative rounded-xl overflow-hidden bg-gradient-to-br from-primary/20 to-primary-glow/20 h-64 flex items-center justify-center group cursor-pointer">
-              <div className="text-center space-y-4">
-                <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
-                  <Play className="w-8 h-8 text-primary ml-1" />
-                </div>
-                <p className="text-lg font-medium">Watch Video Lesson</p>
-                <p className="text-sm text-muted-foreground">5:30 minutes</p>
-              </div>
-            </div>
-
-            {/* Lesson Content */}
-            <div className="prose prose-slate max-w-none">
-              {currentLessonData.content.split('\n\n').map((paragraph, index) => {
-                if (paragraph.startsWith('##')) {
-                  return (
-                    <h3 key={index} className="text-xl font-bold mt-8 mb-4 gradient-text">
-                      {paragraph.replace('##', '').trim()}
-                    </h3>
-                  );
-                } else if (paragraph.startsWith('-')) {
-                  const items = paragraph.split('\n').filter(item => item.startsWith('-'));
-                  return (
-                    <ul key={index} className="space-y-2 my-4">
-                      {items.map((item, i) => (
-                        <li key={i} className="flex items-start">
-                          <span className="text-primary mr-2">•</span>
-                          {item.replace('-', '').trim()}
-                        </li>
-                      ))}
-                    </ul>
-                  );
-                } else if (paragraph.trim()) {
-                  return (
-                    <p key={index} className="text-foreground leading-relaxed mb-4">
-                      {paragraph}
-                    </p>
-                  );
-                }
-                return null;
-              })}
-            </div>
+            <p className="text-foreground/80 leading-relaxed">
+              {course.currentLessonContent.contentText}
+            </p>
           </div>
         </Card>
 
-        {/* Quiz Section */}
+        {/* Quiz Section (Static for now) */}
         <Card className="glass p-8">
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold flex items-center">
-              <span className="text-2xl mr-3">🧠</span>
-              Knowledge Check
-            </h2>
-            
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">{currentLessonData.quiz.question}</h3>
-              
-              <div className="grid gap-3">
-                {currentLessonData.quiz.options.map((option, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleAnswerSelect(index)}
-                    disabled={showResult}
-                    className={`p-4 text-left rounded-lg border-2 transition-all duration-200 ${
-                      showResult
-                        ? index === currentLessonData.quiz.correctAnswer
-                          ? "border-success bg-success/10 text-success"
-                          : selectedAnswer === index
-                          ? "border-destructive bg-destructive/10 text-destructive"
-                          : "border-muted bg-muted/5"
-                        : selectedAnswer === index
-                        ? "border-primary bg-primary/10"
-                        : "border-muted hover:border-primary/50 hover:bg-primary/5"
-                    }`}
-                  >
-                    <div className="flex items-center">
-                      <span className="w-6 h-6 rounded-full border-2 border-current mr-3 flex items-center justify-center text-xs font-bold">
-                        {String.fromCharCode(65 + index)}
-                      </span>
-                      {option}
-                    </div>
-                  </button>
-                ))}
-              </div>
-
-              {showResult && (
-                <div className={`p-4 rounded-lg ${
-                  selectedAnswer === currentLessonData.quiz.correctAnswer
-                    ? "bg-success/10 border border-success"
-                    : "bg-destructive/10 border border-destructive"
-                }`}>
-                  <p className="font-medium mb-2">
-                    {selectedAnswer === currentLessonData.quiz.correctAnswer 
-                      ? "🎉 Correct!" 
-                      : "❌ Incorrect"
-                    }
-                  </p>
-                  <p className="text-sm">{currentLessonData.quiz.explanation}</p>
-                </div>
-              )}
-            </div>
-          </div>
+          <h2 className="text-2xl font-bold mb-4">🧠 Knowledge Check</h2>
+          <p className="text-muted-foreground">Quiz UI would go here.</p>
         </Card>
 
         {/* Navigation */}
         <div className="flex items-center justify-between">
-          <Button
-            variant="outline"
-            onClick={handlePreviousLesson}
-            disabled={currentLesson === 1}
-            className="hover:scale-105 transition-all"
-          >
-            <ChevronLeft className="w-4 h-4 mr-2" />
-            Previous Lesson
+          <Button variant="outline" disabled={currentLessonIndex === 0}>
+            <ChevronLeft className="w-4 h-4 mr-2" /> Previous Lesson
           </Button>
-
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground">
-              Lesson {currentLesson} of {course.totalLessons}
-            </p>
-          </div>
-
-          <Button
-            onClick={handleNextLesson}
-            disabled={!showResult || currentLesson === course.totalLessons}
-            className="hover:scale-105 transition-all group"
-          >
-            Complete Lesson (+50 EDU)
-            <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+          <Button>
+            Complete Lesson (+50 EDU) <ChevronRight className="w-4 h-4 ml-2" />
           </Button>
         </div>
       </div>
