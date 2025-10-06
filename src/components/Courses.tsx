@@ -7,7 +7,6 @@ import { Clock, BookOpen, Users, Star, Play, ChevronsDown } from "lucide-react";
 interface CoursesProps {
   onNavigate: (page: string) => void;
 }
-
 const Courses = ({ onNavigate }: CoursesProps) => {
   const [activeFilter, setActiveFilter] = useState("all");
   const INITIAL_VISIBLE_COURSES = 3;
