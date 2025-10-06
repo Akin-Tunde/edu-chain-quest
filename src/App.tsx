@@ -5,7 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-// --- CHANGE 1: Import the AppProvider ---
+
 import { AppProvider } from "./contexts/AppContext"; 
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
