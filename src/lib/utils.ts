@@ -7,7 +7,6 @@ import { BaseError } from "viem"; // --- ADD THIS IMPORT ---
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-
 // --- ADD THIS FUNCTION ---
 // This function safely navigates the potentially nested error object from wagmi/viem.
 export const getErrorMessage = (error: any): string => {
