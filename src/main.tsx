@@ -5,7 +5,6 @@ import { createRoot } from "react-dom/client";
 import { WagmiProvider } from "wagmi";
 // CHANGE 1: Import QueryClient from @tanstack/react-query
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
 // CHANGE 2: Import the 'config' object you actually exported from wagmi.ts
 import { config } from "@/lib/wagmi.ts";
 
