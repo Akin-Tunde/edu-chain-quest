@@ -19,7 +19,6 @@ const getErrorMessage = (error: any): string => {
     }
     return error.message || "An unknown error occurred.";
 };
-
 export const StakingCard = () => {
     const { address, isConnected } = useAccount();
     const [amount, setAmount] = useState("");
