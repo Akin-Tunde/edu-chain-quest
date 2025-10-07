@@ -5,7 +5,6 @@ import {
   BarChart3,
   User,
 } from "lucide-react";
-
 import { useAppContext } from "@/contexts/AppContext";
 
 const Footer = () => {
